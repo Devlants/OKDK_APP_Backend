@@ -21,7 +21,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 class KaKaoView(APIView):
     def get(self, request):
         kakao_api = "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id="
-        redirect_uri = "http://127.0.0.1:8000/account/kakao/callback/"
+        redirect_uri = "http://3.38.180.187/account/kakao/callback/"
         client_id = "1def2aa86fd42c81904840220886ac54"
 
         return redirect(f"{kakao_api}{client_id}&redirect_uri={redirect_uri}")
@@ -32,7 +32,7 @@ class KaKaoCallBackView(APIView):
         data = {
             "grant_type": "authorization_code",
             "client_id": "1def2aa86fd42c81904840220886ac54",
-            "redirect_uri" : "http://127.0.0.1:8000/account/kakao/callback/",
+            "redirect_uri" : "http://3.38.180.187/account/kakao/callback/",
             "code" : request.GET["code"]
         }
 
@@ -67,7 +67,7 @@ class NaverView(APIView):
     def get(self, request, *args, **kwargs):
         client_id = "oRQ7F4q_jX8AvonjIVNf"
         response_type = "code"
-        uri = "http://127.0.0.1:8000/account/naver/callback/"
+        uri = "http://3.38.180.187/account/naver/callback/"
         state = "NAVER_LOGIN_STRING"
         # Naver Document 에서 확인했던 요청 url
         url = "https://nid.naver.com/oauth2.0/authorize"
@@ -118,7 +118,7 @@ class GoogleView(APIView):
         scope = "https://www.googleapis.com/auth/userinfo.email " + \
                 "https://www.googleapis.com/auth/userinfo.profile"
 
-        redirect_uri = "http://127.0.0.1:8000/account/google/callback/"
+        redirect_uri = "http://3.38.180.187/account/google/callback/"
         google_auth_api = "https://accounts.google.com/o/oauth2/v2/auth"
 
         response = redirect(
@@ -137,7 +137,7 @@ class GoogleCallBackView(APIView):
         client_secret = "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"
         code = request.GET.get('code')
         grant_type = 'authorization_code'
-        redirection_uri = "http://127.0.0.1:8000/account/google/callback/"
+        redirection_uri = "http://3.38.180.187/account/google/callback/"
         state = "random_string"
 
         google_token_api += \
