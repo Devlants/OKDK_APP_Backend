@@ -118,7 +118,7 @@ class GoogleView(APIView):
         scope = "https://www.googleapis.com/auth/userinfo.email " + \
                 "https://www.googleapis.com/auth/userinfo.profile"
 
-        redirect_uri = "http://http://ec2-3-38-180-187.ap-northeast-2.compute.amazonaws.com/account/google/callback/"
+        redirect_uri = "http://ec2-3-38-180-187.ap-northeast-2.compute.amazonaws.com/account/google/callback/"
         google_auth_api = "https://accounts.google.com/o/oauth2/v2/auth"
 
         response = redirect(
@@ -137,7 +137,7 @@ class GoogleCallBackView(APIView):
         client_secret = "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"
         code = request.GET.get('code')
         grant_type = 'authorization_code'
-        redirection_uri = "http://http://ec2-3-38-180-187.ap-northeast-2.compute.amazonaws.com/account/google/callback/"
+        redirection_uri = "http://ec2-3-38-180-187.ap-northeast-2.compute.amazonaws.com/account/google/callback/"
         state = "random_string"
 
         google_token_api += \
