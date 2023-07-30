@@ -20,7 +20,7 @@ class CardSerializer(serializers.ModelSerializer):
 class MembershipSerializer(serializers.ModelSerializer):
     brand = serializers.SerializerMethodField()
     class Meta:
-        model = Card
+        model = Membership
         fields = ["id","brand","serial_num"]
 
 

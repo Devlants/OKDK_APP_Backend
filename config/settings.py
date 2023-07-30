@@ -153,3 +153,4 @@ AUTH_USER_MODEL = 'account.User'
 #스케쥴러 관련
 APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"  # Default
 SCHEDULER_DEFAULT = True
+

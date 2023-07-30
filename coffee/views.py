@@ -15,8 +15,8 @@ from coffee.serializers import BrandSerializer
 @authentication_classes([JWTAuthentication])
 class BrandNotFavoriteAPIView(APIView):
     def get(self,request):
-        user_favorites = set(list(request.user.favorite_set.all().values_list("brand",flat = True)))
-        brands = Brand.objects.exclude(brand__in = user_favorites)
+        user_favorites = set(list(request.user.favorite_set.all().values_list("brand__id",flat = True)))
+        brands = Brand.objects.exclude(id__in = user_favorites)
         brands = BrandSerializer(brands,many=True).data
 
         return Response(brands)
@@ -32,6 +32,29 @@ class BrandMenuAPIView(APIView):
             menues+=d['menues']
         return Response(menues)
 
+@permission_classes((IsAuthenticated,))
+@authentication_classes([JWTAuthentication])
+class BrandTemperatureAPIView(APIView):
+    def get(self, request,**kwargs):
+        brand = Brand.objects.get(id = kwargs["id"])
+        data = requests.get(brand.api+"order/temperature/list/").json()
+        temperatures = []
+
+        for d in data:
+            temperatures.append(d)
+        return Response(temperatures)
+
+@permission_classes((IsAuthenticated,))
+@authentication_classes([JWTAuthentication])
+class BrandSizeAPIView(APIView):
+    def get(self, request,**kwargs):
+        brand = Brand.objects.get(id = kwargs["id"])
+        data = requests.get(brand.api+"order/size/list/").json()
+        sizes = []
+
+        for d in data:
+            sizes.append(d)
+        return Response(sizes)
 
 
 

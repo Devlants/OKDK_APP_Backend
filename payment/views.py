@@ -6,7 +6,9 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.response import Response
 import requests
 
-from .models import Card, History
+from coffee.models import Brand
+from coffee.serializers import BrandSerializer
+from .models import Card, History, Membership
 from .serializers import CardSerializer, MembershipSerializer, MembershipDetailSerializer
 
 
@@ -32,6 +34,12 @@ class CardAPIView(APIView):
             new.save()
         return Response(status=200)
 
+    def put(self,request):
+        data = request.data
+        card = Card.objects.get(id = data["id"])
+        card.set_default()
+        return Response(status=200)
+
 @permission_classes((IsAuthenticated,))
 @authentication_classes([JWTAuthentication])
 class MembershipListAPIView(APIView):
@@ -43,6 +51,13 @@ class MembershipListAPIView(APIView):
 @permission_classes((IsAuthenticated,))
 @authentication_classes([JWTAuthentication])
 class MembershipAPIView(APIView):
+    def get(self,request):
+            membership = list(request.user.membership_set.all().values_list("brand__id",flat=True))
+            brands = Brand.objects.all().exclude(id__in = membership)
+            data = BrandSerializer(brands,many = True).data
+
+            return Response(data)
+
     def post(self,request):
         membership = request.user.membership_set.get(brand__name = request.data.get("brand"))
         data = MembershipDetailSerializer(membership).data
