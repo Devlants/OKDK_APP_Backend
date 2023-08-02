@@ -28,6 +28,38 @@ class RecentOrderApiView(APIView):
 
 @permission_classes((IsAuthenticated,))
 @authentication_classes([JWTAuthentication])
+class MonthOrderApiView(APIView):
+    def get(self,request):
+        orders = []
+        data = {
+            "user" : request.user.username
+        }
+        for brand in Brand.objects.all():
+            api = brand.api
+            response = requests.post(api+"order/list/",data = data)
+            try:
+                response = response.json()
+            except:
+                response = []
+            orders+=response
+        orders.sort(key = lambda x : x["created_at"],reverse = True)
+        data = {}
+        for order in orders:
+            month = order["created_at"][5:7]
+            if month in data:
+                data[month]["total"]+=order["totalPrice"]
+
+            else:
+                data[month] = {
+                    "total" : 0,
+                    "orders" : []
+                }
+            data[month]["orders"].append(order)
+
+        return Response(data = data)
+
+@permission_classes((IsAuthenticated,))
+@authentication_classes([JWTAuthentication])
 class FavoriteAPIView(APIView):
     def get(self,request):
         favorites = {}
