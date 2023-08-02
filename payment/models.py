@@ -6,6 +6,7 @@ class Membership(models.Model):
     brand = models.ForeignKey("coffee.Brand",on_delete=models.CASCADE)
     serial_num = models.CharField(max_length=100)
     point = models.IntegerField(default = 0)
+    image = models.ImageField(upload_to="membership")
 
 class History(models.Model):
     membership = models.ForeignKey(Membership,on_delete=models.CASCADE)

@@ -19,14 +19,18 @@ class CardSerializer(serializers.ModelSerializer):
 
 class MembershipSerializer(serializers.ModelSerializer):
     brand = serializers.SerializerMethodField()
+    image = serializers.SerializerMethodField()
     class Meta:
         model = Membership
-        fields = ["id","brand","serial_num"]
+        fields = ["id","brand","serial_num","image"]
 
 
     def get_brand(self, instance):
         brand = instance.brand.name
         return brand
+
+    def get_image(self,instance):
+        return settings.PROJECT_HOST+instance.image.url
 
 class MembershipDetailSerializer(serializers.ModelSerializer):
     histories = serializers.SerializerMethodField()

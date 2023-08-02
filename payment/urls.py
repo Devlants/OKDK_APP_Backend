@@ -7,4 +7,6 @@ urlpatterns = [
     path("membership/list/",MembershipListAPIView.as_view()),
     path("membership/history/",MembershipHistoryAPIView.as_view()),
     path("membership/",MembershipAPIView.as_view()),
+    path("membership/create/",MembershipCreateAPIView.as_view()),
+
 ]

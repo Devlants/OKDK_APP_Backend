@@ -10,7 +10,9 @@ from coffee.models import Brand
 from coffee.serializers import BrandSerializer
 from .models import Card, History, Membership
 from .serializers import CardSerializer, MembershipSerializer, MembershipDetailSerializer
-
+from PIL import Image
+from io import BytesIO
+from django.core.files import File
 
 @permission_classes((IsAuthenticated,))
 @authentication_classes([JWTAuthentication])
@@ -45,6 +47,7 @@ class CardAPIView(APIView):
 class MembershipListAPIView(APIView):
     def get(self,request):
         memberships = request.user.membership_set.all()
+        print(request.user)
         data = MembershipSerializer(memberships,many = True).data
         return Response(data)
 
@@ -62,6 +65,20 @@ class MembershipAPIView(APIView):
         membership = request.user.membership_set.get(brand__name = request.data.get("brand"))
         data = MembershipDetailSerializer(membership).data
         return Response(data)
+
+@permission_classes((IsAuthenticated,))
+@authentication_classes([JWTAuthentication])
+class MembershipCreateAPIView(APIView):
+    def post(self,request):
+        brand = Brand.objects.get(name = request.data.get("brand"))
+        new = Membership(user = request.user, brand = brand,serial_num = request.data.get("serial_num"))
+        new.save()
+        image = requests.get(f"http://bwipjs-api.metafloor.com/?bcid=code128&text={request.data.get('serial_num')}&scale=3&includetext&backgroundcolor=ffffff")
+        barcode_image = Image.open(BytesIO(image.content))
+        img_byte_array = BytesIO()
+        barcode_image.save(img_byte_array, format='PNG')  # 다른 포맷으로 저장하려면 format 변경
+        new.image.save(f"barcode_{new.pk}.png", File(img_byte_array))
+        return Response(status=200)
 
 @permission_classes((IsAuthenticated,))
 @authentication_classes([JWTAuthentication])
