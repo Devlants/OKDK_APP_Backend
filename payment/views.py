@@ -71,6 +71,9 @@ class MembershipAPIView(APIView):
 class MembershipCreateAPIView(APIView):
     def post(self,request):
         brand = Brand.objects.get(name = request.data.get("brand"))
+        if Membership.objects.filter(user = request.user,brand = brand).exists():
+            return Response({"error":"이미 존재하는 브랜드 입니다."},status = 400)
+
         new = Membership(user = request.user, brand = brand,serial_num = request.data.get("serial_num"))
         new.save()
         image = requests.get(f"http://bwipjs-api.metafloor.com/?bcid=code128&text={request.data.get('serial_num')}&scale=3&includetext&backgroundcolor=ffffff")
