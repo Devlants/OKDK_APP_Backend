@@ -98,8 +98,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'okdk',
+        'USER': 'admin',
+        'PASSWORD': 'kjh980309',
+        'HOST': 'okdk.cloa3ma1uwfb.ap-northeast-2.rds.amazonaws.com',
+        'PORT': '3308',
     }
 }
 
