@@ -9,7 +9,7 @@ import requests
 from coffee.models import Brand
 from coffee.serializers import BrandSerializer
 from .models import Card, History, Membership
-from .serializers import CardSerializer, MembershipSerializer, MembershipDetailSerializer
+from .serializers import CardSerializer, MembershipSerializer, MembershipDetailSerializer, CardDetailSerializer
 from PIL import Image
 from io import BytesIO
 from django.core.files import File
@@ -27,6 +27,15 @@ class CardListAPIView(APIView):
 class CardAPIView(APIView):
     def post(self,request):
         data = request.data
+        card = Card.objects.get(id=data["id"])
+        serializer = CardDetailSerializer(card).data
+        return Response(serializer)
+
+@permission_classes((IsAuthenticated,))
+@authentication_classes([JWTAuthentication])
+class CardCreateAPIView(APIView):
+    def post(self,request):
+        data = request.data
         # new = Card(user = request.user, image = data["image"], serial_num = data["serial_num"],expiry_date = data["expiry_date"],cvc = data["cvc"],password = data["password"])
         new = Card(user = request.user, serial_num = data["serial_num"],expiry_date = data["expiry_date"],cvc = data["cvc"],password = data["password"])
 
@@ -40,6 +49,12 @@ class CardAPIView(APIView):
         data = request.data
         card = Card.objects.get(id = data["id"])
         card.set_default()
+        return Response(status=200)
+
+    def delete(self,request):
+        data = request.data
+        card = Card.objects.get(id = data["id"])
+        card.delete()
         return Response(status=200)
 
 @permission_classes((IsAuthenticated,))

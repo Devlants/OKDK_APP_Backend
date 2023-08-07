@@ -2,6 +2,21 @@ from rest_framework import serializers
 from .models import Card, History, Membership
 from django.conf import settings
 
+class CardDetailSerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField()
+    # image = serializers.SerializerMethodField()
+    class Meta:
+        model = Card
+        # fields = ["id","name","image","default","serial_num"]
+        fields = ["id","image","expiry_date","cvc","password","name","default","serial_num"]
+
+
+    def get_name(self, instance):
+        return instance.__str__()
+
+    def get_image(self,instance):
+        return getattr(settings,"PROJECT_HOST")+str(instance.image.url)
+
 class CardSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
     # image = serializers.SerializerMethodField()
