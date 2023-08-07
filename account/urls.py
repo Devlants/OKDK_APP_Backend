@@ -15,4 +15,5 @@ urlpatterns = [
     path("user/mode/update/",UserModeUpdateAPIView.as_view(),name = "user-mode-update"),
     path("user/default/card/",DefaultCardAPIView.as_view()),
     path("user/membership/",MembershipApiView.as_view()),
+    path("user/face/register/",FaceRegisterApiView.as_view()),
 ]

@@ -16,30 +16,34 @@ from django.core.exceptions import ValidationError
 import json
 from django.shortcuts import get_object_or_404
 from rest_framework_simplejwt.tokens import RefreshToken
+import face_recognition
+import cv2
+import os
+import numpy as np
 
 @permission_classes((AllowAny,))
 class KaKaoView(APIView):
     def get(self, request):
         kakao_api = "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id="
-        redirect_uri = "http://3.38.180.187/account/kakao/callback/"
+
+        redirect_uri = "http://127.0.0.1:8000/account/kakao/callback/"
         client_id = "1def2aa86fd42c81904840220886ac54"
         response = requests.get(f"{kakao_api}{client_id}&redirect_uri={redirect_uri}")
-        print(response)
+        print(response.url)
         return Response(response.text)
 
 @permission_classes((AllowAny,))
 class KaKaoCallBackView(APIView):
     def get(self, request):
-
+        print("hi")
         data = {
             "grant_type": "authorization_code",
             "client_id": "1def2aa86fd42c81904840220886ac54",
-            "redirect_uri" : "http://3.38.180.187/account/kakao/callback/",
+            "redirect_uri" : "http://127.0.0.1:3000/kakao/callback/",
             "code" : request.GET["code"]
         }
 
         kakao_token_api = "https://kauth.kakao.com/oauth/token"
-
         ACCESS_TOKEN = requests.post(kakao_token_api,data = data).json()["access_token"]
 
         kakao_user_api = "https://kapi.kakao.com/v2/user/me"
@@ -237,5 +241,70 @@ class MembershipApiView(APIView):
             }
         return Response(data)
 
+class FaceRecog():
+    def __init__(self):
+        self.known_face_encodings = []
+        self.known_face_names = []
 
+        # Load sample pictures and learn how to recognize them.
+        dirname = 'media/user'
+        files = os.listdir(dirname)
+        for filename in files:
+            name, ext = os.path.splitext(filename)
+            if ext == '.jpg':
+                self.known_face_names.append(name)
+                pathname = os.path.join(dirname, filename)
+                img = face_recognition.load_image_file(pathname)
+                face_encoding = face_recognition.face_encodings(img)[0]
+                self.known_face_encodings.append(face_encoding)
 
+    def recognize_faces_in_image(self, image_path):
+        # Load the image
+        image = face_recognition.load_image_file(image_path)
+
+        # Find all the faces and face encodings in the image
+        face_locations = face_recognition.face_locations(image)
+        face_encodings = face_recognition.face_encodings(image, face_locations)
+
+        face_names = []
+        for face_encoding in face_encodings:
+            # Compare the face with known faces
+            distances = face_recognition.face_distance(self.known_face_encodings, face_encoding)
+            min_value = min(distances)
+
+            # tolerance: How much distance between faces to consider it a match. Lower is more strict.
+            # 0.6 is typical best performance.
+            name = "Unknown"
+            if min_value < 0.45:
+                index = np.argmin(distances)
+                name = self.known_face_names[index]
+
+            face_names.append(name)
+            return name
+
+        return face_locations, face_names
+
+@permission_classes((IsAuthenticated,))
+@authentication_classes([JWTAuthentication])
+class FaceRegisterApiView(APIView):
+    def post(self,request):
+        face_recog = FaceRecog()
+
+        print(face_recog.known_face_names)
+
+        # 이미지 파일 경로 설정
+        image_path = 'unknown/2.jpg'
+        face_locations, face_names = face_recog.recognize_faces_in_image(image_path)
+
+        # Load the image
+        image = face_recognition.load_image_file(image_path)
+
+        # Display the results
+        for (top, right, bottom, left), name in zip(face_locations, face_names):
+            # Draw a box around the face
+            cv2.rectangle(image, (left, top), (right, bottom), (0, 0, 255), 2)
+
+            # Draw a label with a name below the face
+            cv2.rectangle(image, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
+            font = cv2.FONT_HERSHEY_DUPLEX
+            cv2.putText(image, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
