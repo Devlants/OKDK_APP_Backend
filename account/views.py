@@ -24,7 +24,7 @@ class KaKaoView(APIView):
         redirect_uri = "http://3.38.180.187/account/kakao/callback/"
         client_id = "1def2aa86fd42c81904840220886ac54"
         response = requests.get(f"{kakao_api}{client_id}&redirect_uri={redirect_uri}")
-        print(response.json())
+        print(response)
         return response
 
 @permission_classes((AllowAny,))
