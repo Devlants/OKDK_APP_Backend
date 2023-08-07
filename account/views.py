@@ -23,8 +23,9 @@ class KaKaoView(APIView):
         kakao_api = "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id="
         redirect_uri = "http://3.38.180.187/account/kakao/callback/"
         client_id = "1def2aa86fd42c81904840220886ac54"
-        print(requests.get(f"{kakao_api}{client_id}&redirect_uri={redirect_uri}").json())
-        return requests.get(f"{kakao_api}{client_id}&redirect_uri={redirect_uri}").json()
+        response = requests.get(f"{kakao_api}{client_id}&redirect_uri={redirect_uri}")
+        print(response.json())
+        return redirect(f"{kakao_api}{client_id}&redirect_uri={redirect_uri}")
 
 @permission_classes((AllowAny,))
 class KaKaoCallBackView(APIView):
