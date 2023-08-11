@@ -138,25 +138,7 @@ class GoogleView(APIView):
 @permission_classes((AllowAny,))
 class GoogleCallBackView(APIView):
     def get(self, request, *args, **kwargs):
-
-        google_token_api = "https://oauth2.googleapis.com/token"
-
-        client_id = "37407377499-cbdeh927g2njp0nd6ibdp6iei8eus727.apps.googleusercontent.com"
-        client_secret = "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"
-        code = request.GET.get('code')
-        grant_type = 'authorization_code'
-        redirection_uri = "http://127.0.0.1:3000/google/callback/"
-        state = "random_string"
-        print(code)
-        google_token_api += \
-            f"?client_id={client_id}&client_secret={client_secret}&code={code}&grant_type={grant_type}&redirect_uri={redirection_uri}&state={state}"
-
-        token_response = requests.post(google_token_api)
-        print(token_response.json())
-        if not token_response.ok:
-            raise ValidationError('google_token is invalid')
-
-        access_token = token_response.json().get('access_token')
+        access_token = request.GET.get('access_token')
         user_info_response = requests.get(
             "https://www.googleapis.com/oauth2/v3/userinfo",
             params={

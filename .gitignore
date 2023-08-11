@@ -2,3 +2,6 @@
 /shelf/
 /workspace.xml
 venv/
+*.xml
+*.iml
+*.pyc
