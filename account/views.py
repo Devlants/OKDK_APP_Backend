@@ -1,5 +1,4 @@
-from django.contrib.auth import login
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import permission_classes, authentication_classes
@@ -7,7 +6,6 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from django.core.files.uploadedfile import SimpleUploadedFile
 
 from payment.serializers import CardSerializer, MembershipSerializer
 from .models import User
@@ -20,8 +18,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 import face_recognition
 import os
 import numpy as np
-from PIL import Image
-from io import BytesIO
+import uuid
 
 @permission_classes((AllowAny,))
 class KaKaoView(APIView):
@@ -296,7 +293,8 @@ class FaceRecognitionApiView(APIView):
 class FaceRegisterAPIView(APIView):
     def post(self,request):
         image = request.FILES["image"]
-        request.user.image = image
+        unique_filename = request.user.username + os.path.splitext(image.name)[-1]
+        request.user.image.save(unique_filename, image)
+        request.user.face_registered = True
         request.user.save()
-
         return Response(status = 200)
