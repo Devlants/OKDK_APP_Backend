@@ -7,6 +7,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 from payment.serializers import CardSerializer, MembershipSerializer
 from .models import User
@@ -17,9 +18,10 @@ import json
 from django.shortcuts import get_object_or_404
 from rest_framework_simplejwt.tokens import RefreshToken
 import face_recognition
-import cv2
 import os
 import numpy as np
+from PIL import Image
+from io import BytesIO
 
 @permission_classes((AllowAny,))
 class KaKaoView(APIView):
@@ -139,18 +141,18 @@ class GoogleCallBackView(APIView):
 
         google_token_api = "https://oauth2.googleapis.com/token"
 
-        client_id = "435546094465-nkivfk3cju2jg1jp1katfsu5ttbfkgti.apps.googleusercontent.com"
-        client_secret = "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"
+        client_id = "37407377499-cbdeh927g2njp0nd6ibdp6iei8eus727.apps.googleusercontent.com"
+        client_secret = "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"
         code = request.GET.get('code')
         grant_type = 'authorization_code'
-        redirection_uri = "http://ec2-3-38-180-187.ap-northeast-2.compute.amazonaws.com/account/google/callback/"
+        redirection_uri = "http://127.0.0.1:3000/google/callback/"
         state = "random_string"
-
+        print(code)
         google_token_api += \
             f"?client_id={client_id}&client_secret={client_secret}&code={code}&grant_type={grant_type}&redirect_uri={redirection_uri}&state={state}"
 
         token_response = requests.post(google_token_api)
-
+        print(token_response.json())
         if not token_response.ok:
             raise ValidationError('google_token is invalid')
 
@@ -261,50 +263,58 @@ class FaceRecog():
     def recognize_faces_in_image(self, image_path):
         # Load the image
         image = face_recognition.load_image_file(image_path)
-
         # Find all the faces and face encodings in the image
         face_locations = face_recognition.face_locations(image)
         face_encodings = face_recognition.face_encodings(image, face_locations)
-
         face_names = []
         for face_encoding in face_encodings:
             # Compare the face with known faces
             distances = face_recognition.face_distance(self.known_face_encodings, face_encoding)
             min_value = min(distances)
-
             # tolerance: How much distance between faces to consider it a match. Lower is more strict.
             # 0.6 is typical best performance.
             name = "Unknown"
-            if min_value < 0.45:
+            if min_value < 0.6:
                 index = np.argmin(distances)
                 name = self.known_face_names[index]
 
             face_names.append(name)
             return name
 
-        return face_locations, face_names
-
-@permission_classes((IsAuthenticated,))
-@authentication_classes([JWTAuthentication])
-class FaceRegisterApiView(APIView):
+@permission_classes((AllowAny,))
+class FaceRecognitionApiView(APIView):
     def post(self,request):
         face_recog = FaceRecog()
 
-        print(face_recog.known_face_names)
+        # print(face_recog.known_face_names)
 
         # 이미지 파일 경로 설정
-        image_path = 'unknown/2.jpg'
-        face_locations, face_names = face_recog.recognize_faces_in_image(image_path)
+        image_path = 'C:\\Users\\jomul\\Desktop\\20230606_180128.jpeg'
+        # face_locations, face_names = face_recog.recognize_faces_in_image(image_path)
+        context ={
+            "username" : face_recog.recognize_faces_in_image(image_path)
+        }
 
         # Load the image
-        image = face_recognition.load_image_file(image_path)
+        # image = face_recognition.load_image_file(image_path)
+        #
+        # # Display the results
+        # for (top, right, bottom, left), name in zip(face_locations, face_names):
+        #     # Draw a box around the face
+        #     cv2.rectangle(image, (left, top), (right, bottom), (0, 0, 255), 2)
+        #
+        #     # Draw a label with a name below the face
+        #     cv2.rectangle(image, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
+        #     font = cv2.FONT_HERSHEY_DUPLEX
+        #     cv2.putText(image, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
+        return Response(context)
 
-        # Display the results
-        for (top, right, bottom, left), name in zip(face_locations, face_names):
-            # Draw a box around the face
-            cv2.rectangle(image, (left, top), (right, bottom), (0, 0, 255), 2)
+@permission_classes((IsAuthenticated,))
+@authentication_classes([JWTAuthentication])
+class FaceRegisterAPIView(APIView):
+    def post(self,request):
+        image = request.FILES["image"]
+        request.user.image = image
+        request.user.save()
 
-            # Draw a label with a name below the face
-            cv2.rectangle(image, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
-            font = cv2.FONT_HERSHEY_DUPLEX
-            cv2.putText(image, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
+        return Response(status = 200)
