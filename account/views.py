@@ -18,7 +18,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 import face_recognition
 import os
 import numpy as np
-import uuid
+from PIL import Image
+import io
 
 @permission_classes((AllowAny,))
 class KaKaoView(APIView):
@@ -242,8 +243,10 @@ class FaceRecog():
     def recognize_faces_in_image(self, image_path):
         # Load the image
         image = face_recognition.load_image_file(image_path)
+        print("image",image)
         # Find all the faces and face encodings in the image
         face_locations = face_recognition.face_locations(image)
+        print("face_locations",face_locations)
         face_encodings = face_recognition.face_encodings(image, face_locations)
         face_names = []
         for face_encoding in face_encodings:
@@ -265,28 +268,40 @@ class FaceRecognitionApiView(APIView):
     def post(self,request):
         face_recog = FaceRecog()
 
-        # print(face_recog.known_face_names)
+        image = request.data.get("image")
+        folder_path = "./media/unknown/"
+        image_path = os.path.join(folder_path, 'image.jpeg')
 
-        # 이미지 파일 경로 설정
-        image_path = 'C:\\Users\\jomul\\Desktop\\20230606_180128.jpeg'
-        # face_locations, face_names = face_recog.recognize_faces_in_image(image_path)
-        context ={
-            "username" : face_recog.recognize_faces_in_image(image_path)
-        }
+        with Image.open(image) as img:
+            # Check and adjust orientation if needed
+            if hasattr(img, "_getexif"):
+                exif = img._getexif()
+                if exif is not None:
+                    orientation = exif.get(0x0112, 1)
+                    if orientation == 3:
+                        img = img.rotate(180, expand=True)
+                    elif orientation == 6:
+                        img = img.rotate(270, expand=True)
+                    elif orientation == 8:
+                        img = img.rotate(90, expand=True)
+            img = img.convert("RGB")
+            img.save(image_path, format='JPEG', quality=90)
+        username = face_recog.recognize_faces_in_image(image_path)
 
-        # Load the image
-        # image = face_recognition.load_image_file(image_path)
-        #
-        # # Display the results
-        # for (top, right, bottom, left), name in zip(face_locations, face_names):
-        #     # Draw a box around the face
-        #     cv2.rectangle(image, (left, top), (right, bottom), (0, 0, 255), 2)
-        #
-        #     # Draw a label with a name below the face
-        #     cv2.rectangle(image, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
-        #     font = cv2.FONT_HERSHEY_DUPLEX
-        #     cv2.putText(image, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
-        return Response(context)
+        for item in os.listdir(folder_path):
+            item_path = os.path.join(folder_path, item)
+            os.remove(item_path)
+        try:
+            user = User.objects.get(username = username)
+        except:
+            return Response(status = 401, data = {"error" : "Unknown user"})
+
+        refresh = RefreshToken.for_user(user)
+
+        return Response({
+                'access': str(refresh.access_token),
+                'refresh': str(refresh)
+            })
 
 @permission_classes((IsAuthenticated,))
 @authentication_classes([JWTAuthentication])
