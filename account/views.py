@@ -7,6 +7,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
+from payment.models import Card
 from payment.serializers import CardSerializer, MembershipSerializer
 from .models import User
 from .serializers import UserSerializer
@@ -211,6 +212,12 @@ class DefaultCardAPIView(APIView):
             }
         return Response(data)
 
+    def put(self,request):
+        data = request.data
+        card = Card.objects.get(id = data["id"])
+        card.set_default()
+        return Response(status=200)
+
 @permission_classes((IsAuthenticated,))
 @authentication_classes([JWTAuthentication])
 class MembershipApiView(APIView):
@@ -266,12 +273,15 @@ class FaceRecog():
 @permission_classes((AllowAny,))
 class FaceRecognitionApiView(APIView):
     def post(self,request):
-        face_recog = FaceRecog()
+
+        if not os.listdir("./media/user/"):
+            return Response(status=400,data = {"error":"얼굴 등록 정보가 없습니다."})
 
         image = request.data.get("image")
         folder_path = "./media/unknown/"
         image_path = os.path.join(folder_path, 'image.jpeg')
 
+        face_recog = FaceRecog()
         with Image.open(image) as img:
             # Check and adjust orientation if needed
             if hasattr(img, "_getexif"):

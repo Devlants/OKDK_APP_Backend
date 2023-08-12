@@ -4,10 +4,9 @@ from django.conf import settings
 
 class CardDetailSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
-    # image = serializers.SerializerMethodField()
+    image = serializers.SerializerMethodField()
     class Meta:
         model = Card
-        # fields = ["id","name","image","default","serial_num"]
         fields = ["id","image","expiry_date","cvc","password","name","default","serial_num"]
 
 
@@ -17,20 +16,24 @@ class CardDetailSerializer(serializers.ModelSerializer):
     def get_image(self,instance):
         return getattr(settings,"PROJECT_HOST")+str(instance.image.url)
 
-class CardSerializer(serializers.ModelSerializer):
-    name = serializers.SerializerMethodField()
-    # image = serializers.SerializerMethodField()
+class CardCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Card
-        # fields = ["id","name","image","default","serial_num"]
-        fields = ["id","name","default","serial_num"]
+        fields = ["expiry_date","cvc","password","serial_num"]
+
+class CardSerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField()
+    image = serializers.SerializerMethodField()
+    class Meta:
+        model = Card
+        fields = ["id","name","default","serial_num","image"]
 
 
     def get_name(self, instance):
         return instance.__str__()
 
     def get_image(self,instance):
-        return getattr(settings,"PROJECT_HOST")+str(instance.image.url)
+        return str(getattr(settings,"PROJECT_HOST"))+str(instance.image.url)
 
 class MembershipSerializer(serializers.ModelSerializer):
     brand = serializers.SerializerMethodField()

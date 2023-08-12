@@ -9,7 +9,8 @@ import requests
 from coffee.models import Brand
 from coffee.serializers import BrandSerializer
 from .models import Card, History, Membership
-from .serializers import CardSerializer, MembershipSerializer, MembershipDetailSerializer, CardDetailSerializer
+from .serializers import CardSerializer, MembershipSerializer, MembershipDetailSerializer, CardDetailSerializer, \
+    CardCreateSerializer
 from PIL import Image
 from io import BytesIO
 from django.core.files import File
@@ -31,24 +32,31 @@ class CardAPIView(APIView):
         serializer = CardDetailSerializer(card).data
         return Response(serializer)
 
+
+
 @permission_classes((IsAuthenticated,))
 @authentication_classes([JWTAuthentication])
 class CardCreateAPIView(APIView):
     def post(self,request):
-        data = request.data
-        # new = Card(user = request.user, image = data["image"], serial_num = data["serial_num"],expiry_date = data["expiry_date"],cvc = data["cvc"],password = data["password"])
+        data = request.POST
         new = Card(user = request.user, serial_num = data["serial_num"],expiry_date = data["expiry_date"],cvc = data["cvc"],password = data["password"])
-
+        new.image = request.FILES.get("image")
         new.save()
-        if data["is_default"] == True:
+        if data["is_default"] == "true":
             new.set_default()
             new.save()
         return Response(status=200)
 
     def put(self,request):
-        data = request.data
-        card = Card.objects.get(id = data["id"])
-        card.set_default()
+        card = Card.objects.get(id = request.POST.get("id"))
+        serializer = CardCreateSerializer(card, data=request.POST)
+        if serializer.is_valid():
+            card = serializer.save()
+            card.image = request.FILES.get("image")
+            if request.POST.get("is_default") == "true":
+                card.set_default()
+            card.save()
+
         return Response(status=200)
 
     def delete(self,request):
