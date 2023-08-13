@@ -1,11 +1,13 @@
-from django.shortcuts import render
+import os
+
 from rest_framework.decorators import permission_classes, authentication_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.response import Response
 import requests
-
+import re
+import pytesseract
 from coffee.models import Brand
 from coffee.serializers import BrandSerializer
 from .models import Card, History, Membership
@@ -14,6 +16,8 @@ from .serializers import CardSerializer, MembershipSerializer, MembershipDetailS
 from PIL import Image
 from io import BytesIO
 from django.core.files import File
+
+pytesseract.pytesseract.tesseract_cmd = r'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
 
 @permission_classes((IsAuthenticated,))
 @authentication_classes([JWTAuthentication])
@@ -64,6 +68,39 @@ class CardCreateAPIView(APIView):
         card = Card.objects.get(id = data["id"])
         card.delete()
         return Response(status=200)
+
+# @permission_classes((IsAuthenticated,))
+# @authentication_classes([JWTAuthentication])
+class CardImageCreateAPIView(APIView):
+    def post(self,request):
+        image = request.data.get("image")
+        # folder_path = "./media/card_create/"
+        # image_path = os.path.join(folder_path, 'image.jpeg')
+        # 이미지 로드
+        image = Image.open(image)
+        # 이미지 내의 텍스트 추출
+        extracted_text = pytesseract.image_to_string(image)
+        card_number = re.findall(r'\d{4} \d{4} \d{4} \d{4}', extracted_text)
+        if card_number:
+            card_number = card_number[0]
+        else:
+            card_number = None
+        expiration_date = re.findall(r'\d{2}/\d{2}', extracted_text)
+        if expiration_date:
+            expiration_date = expiration_date[0]
+        else:
+            expiration_date = None
+        cvc_number = re.findall(r'\d{3}', extracted_text)
+        if cvc_number:
+            cvc_number = cvc_number[0]
+        else:
+            cvc_number = None
+
+        return Response({
+            'card_number': card_number,
+            'expiration_date': expiration_date,
+            'cvc_number': cvc_number
+        })
 
 @permission_classes((IsAuthenticated,))
 @authentication_classes([JWTAuthentication])
