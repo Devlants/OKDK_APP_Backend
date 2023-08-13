@@ -17,7 +17,6 @@ from PIL import Image
 from io import BytesIO
 from django.core.files import File
 
-pytesseract.pytesseract.tesseract_cmd = r'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
 
 @permission_classes((IsAuthenticated,))
 @authentication_classes([JWTAuthentication])
