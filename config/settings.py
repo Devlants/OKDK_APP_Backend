@@ -27,7 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-PROJECT_HOST = "http://3.36.99.172"
+PROJECT_HOST = "http://3.36.63.88"
 # Application definition
 
 INSTALLED_APPS = [
