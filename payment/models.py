@@ -197,6 +197,7 @@ class Card(models.Model):
         r"^9461[0-9]*": "BC",
         r"^9490 13[0-9]*": "현대",
         r"^9490 28[0-9]*": "현대",
+        r"^9490 [0-9]*": "국민",
         r"^9530 03[0-9]*": "광주",
         r"^5898[0-9]*": "직불",
         r"^5021 23[0-9]*": "국민",
@@ -215,7 +216,7 @@ class Card(models.Model):
             if result:
                 return value
 
-        return None
+        return "알수없음"
 
     def __str__(self):
         return self.check_string_with_regex(self.serial_num) + " ("+self.serial_num[15:]+")"
