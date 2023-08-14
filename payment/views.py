@@ -68,8 +68,8 @@ class CardCreateAPIView(APIView):
         card.delete()
         return Response(status=200)
 
-# @permission_classes((IsAuthenticated,))
-# @authentication_classes([JWTAuthentication])
+@permission_classes((IsAuthenticated,))
+@authentication_classes([JWTAuthentication])
 class CardImageCreateAPIView(APIView):
     def post(self,request):
         image = request.data.get("image")
