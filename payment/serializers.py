@@ -14,7 +14,10 @@ class CardDetailSerializer(serializers.ModelSerializer):
         return instance.__str__()
 
     def get_image(self,instance):
-        return getattr(settings,"PROJECT_HOST")+str(instance.image.url)
+        if instance.image:
+            return str(getattr(settings,"PROJECT_HOST"))+str(instance.image.url)
+        else:
+            return None
 
 class CardCreateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -51,7 +54,10 @@ class MembershipSerializer(serializers.ModelSerializer):
         return brand
 
     def get_image(self,instance):
-        return settings.PROJECT_HOST+instance.image.url
+        if instance.image:
+            return str(getattr(settings,"PROJECT_HOST"))+str(instance.image.url)
+        else:
+            return None
 
 class MembershipDetailSerializer(serializers.ModelSerializer):
     histories = serializers.SerializerMethodField()
