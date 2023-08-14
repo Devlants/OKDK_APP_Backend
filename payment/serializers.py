@@ -33,7 +33,10 @@ class CardSerializer(serializers.ModelSerializer):
         return instance.__str__()
 
     def get_image(self,instance):
-        return str(getattr(settings,"PROJECT_HOST"))+str(instance.image.url)
+        if instance.image:
+            return str(getattr(settings,"PROJECT_HOST"))+str(instance.image.url)
+        else:
+            return None
 
 class MembershipSerializer(serializers.ModelSerializer):
     brand = serializers.SerializerMethodField()
