@@ -20,7 +20,7 @@ import face_recognition
 import os
 import numpy as np
 from PIL import Image
-import io
+import re
 
 @permission_classes((AllowAny,))
 class KaKaoView(APIView):
@@ -185,8 +185,24 @@ class RefreshAccessTokenAPIView(APIView):
 @authentication_classes([JWTAuthentication])
 class UserInfoAPIView(APIView):
     def get(self,request):
-        serializer = UserSerializer(instance=request.user)
-        return Response(serializer.data)
+        serializer = UserSerializer(instance=request.user).data
+        username = serializer.get("username")
+        if username.isdigit():
+            social = "카카오톡"
+        elif re.compile(r"@gmail\.com$").search(username) is not None:
+            social = "구글"
+        else:
+            social = "네이버"
+        data = {
+            "social" : social,
+            "user" : serializer
+        }
+        return Response(data)
+
+    def delete(self,request):
+        user = request.user
+        user.delete()
+        return Response(status = 200)
 
 @permission_classes((IsAuthenticated,))
 @authentication_classes([JWTAuthentication])
@@ -325,6 +341,9 @@ class FaceRecognitionApiView(APIView):
 @authentication_classes([JWTAuthentication])
 class FaceRegisterAPIView(APIView):
     def post(self,request):
+        if request.user.face_registered:
+            return Response(status = 400,data = {"message": "이미 등록된 얼굴이 있음"})
+
         image = request.data.get("image")
         folder_path = "./media/unknown/"
         image_path = os.path.join(folder_path, 'image_register.jpeg')
@@ -348,7 +367,48 @@ class FaceRegisterAPIView(APIView):
         for item in os.listdir(folder_path):
             item_path = os.path.join(folder_path, item)
             os.remove(item_path)
+
         if image_check:
+            unique_filename = request.user.username + os.path.splitext(image.name)[-1]
+            request.user.image.save(unique_filename, image)
+            request.user.face_registered = True
+            request.user.save()
+            return Response(status = 200)
+        else:
+            return Response(status = 400, data = {"message" : "사진 불량"})
+
+    def put(self,request):
+        if not request.user.face_registered:
+            return Response(status = 400,data = {"message": "이미 등록된 얼굴이 없음"})
+
+        image = request.data.get("image")
+        folder_path = "./media/unknown/"
+        image_path = os.path.join(folder_path, 'image_register.jpeg')
+
+        with Image.open(image) as img:
+            # Check and adjust orientation if needed
+            if hasattr(img, "_getexif"):
+                exif = img._getexif()
+                if exif is not None:
+                    orientation = exif.get(0x0112, 1)
+                    if orientation == 3:
+                        img = img.rotate(180, expand=True)
+                    elif orientation == 6:
+                        img = img.rotate(270, expand=True)
+                    elif orientation == 8:
+                        img = img.rotate(90, expand=True)
+            img = img.convert("RGB")
+            img.save(image_path, format='JPEG', quality=90)
+
+        image_check =  face_recognition.face_locations(face_recognition.load_image_file(image_path))
+        for item in os.listdir(folder_path):
+            item_path = os.path.join(folder_path, item)
+            os.remove(item_path)
+
+        if image_check:
+            for item in os.listdir("./media/user/"):
+                item_path = os.path.join(folder_path, item)
+                os.remove(item_path)
             unique_filename = request.user.username + os.path.splitext(image.name)[-1]
             request.user.image.save(unique_filename, image)
             request.user.face_registered = True
