@@ -30,6 +30,6 @@ jobs:
           username: ${{ secrets.REMOTE_USER }} # 우분투 아이디
           key: ${{ secrets.REMOTE_PRIVATE_KEY }} # ec2 instance pem key
           port: ${{ secrets.REMOTE_SSH_PORT }} # 접속포트
-        run: |
-          cd OKDK_APP_Backend && git pull
-          systemctl restart gunicorn
+          script: |
+            cd OKDK_APP_Backend && git pull
+            systemctl restart gunicorn
