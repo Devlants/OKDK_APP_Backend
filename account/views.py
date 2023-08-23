@@ -304,9 +304,9 @@ class FaceRecognitionApiView(APIView):
         print(image_path,"save image")
         username = face_recog.recognize_faces_in_image(image_path)
         print("username",username)
-        for item in os.listdir(folder_path):
-            item_path = os.path.join(folder_path, item)
-            os.remove(item_path)
+        # for item in os.listdir(folder_path):
+        #     item_path = os.path.join(folder_path, item)
+        #     os.remove(item_path)
         try:
             user = User.objects.get(username = username)
             print("user",user)
