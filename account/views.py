@@ -240,6 +240,7 @@ class FaceRecog():
         dirname = 'media/user'
         files = os.listdir(dirname)
         for filename in files:
+            print(filename)
             name, ext = os.path.splitext(filename)
             if ext == '.jpg':
                 self.known_face_names.append(name)
