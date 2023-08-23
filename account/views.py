@@ -286,6 +286,7 @@ class FaceRecognitionApiView(APIView):
         image_path = os.path.join(folder_path, 'image.jpeg')
 
         face_recog = FaceRecog()
+        print("init FaceRecog()")
         with Image.open(image) as img:
             # Check and adjust orientation if needed
             if hasattr(img, "_getexif"):
@@ -300,14 +301,15 @@ class FaceRecognitionApiView(APIView):
                         img = img.rotate(90, expand=True)
             img = img.convert("RGB")
             img.save(image_path, format='JPEG', quality=90)
-        print(image_path)
+        print(image_path,"save image")
         username = face_recog.recognize_faces_in_image(image_path)
-
+        print("username",username)
         for item in os.listdir(folder_path):
             item_path = os.path.join(folder_path, item)
             os.remove(item_path)
         try:
             user = User.objects.get(username = username)
+            peinr("user",user)
         except:
             return Response(status = 401, data = {"error" : "Unknown user"})
 
@@ -322,7 +324,26 @@ class FaceRecognitionApiView(APIView):
 @authentication_classes([JWTAuthentication])
 class FaceRegisterAPIView(APIView):
     def post(self,request):
-        image = request.FILES["image"]
+        image = request.data.get("image")
+        # folder_path = "./media/unknown/"
+        # image_path = os.path.join(folder_path, 'image.jpeg')
+        #
+        # with Image.open(image) as img:
+        #     # Check and adjust orientation if needed
+        #     if hasattr(img, "_getexif"):
+        #         exif = img._getexif()
+        #         if exif is not None:
+        #             orientation = exif.get(0x0112, 1)
+        #             if orientation == 3:
+        #                 img = img.rotate(180, expand=True)
+        #             elif orientation == 6:
+        #                 img = img.rotate(270, expand=True)
+        #             elif orientation == 8:
+        #                 img = img.rotate(90, expand=True)
+        #     img = img.convert("RGB")
+        #     img.save(image_path, format='JPEG', quality=90)
+        #
+        # if
         unique_filename = request.user.username + os.path.splitext(image.name)[-1]
         request.user.image.save(unique_filename, image)
         request.user.face_registered = True
