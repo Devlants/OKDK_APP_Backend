@@ -309,8 +309,9 @@ class FaceRecognitionApiView(APIView):
             os.remove(item_path)
         try:
             user = User.objects.get(username = username)
-            peinr("user",user)
+            print("user",user)
         except:
+            print("unknown user")
             return Response(status = 401, data = {"error" : "Unknown user"})
 
         refresh = RefreshToken.for_user(user)
