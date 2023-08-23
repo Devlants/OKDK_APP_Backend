@@ -313,7 +313,7 @@ class FaceRecognitionApiView(APIView):
                 'access': str(refresh.access_token),
                 'refresh': str(refresh)
             })
-
+##
 @permission_classes((IsAuthenticated,))
 @authentication_classes([JWTAuthentication])
 class FaceRegisterAPIView(APIView):
