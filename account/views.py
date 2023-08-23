@@ -245,6 +245,8 @@ class FaceRecog():
                 self.known_face_names.append(name)
                 pathname = os.path.join(dirname, filename)
                 img = face_recognition.load_image_file(pathname)
+                print(img)
+                print(face_recognition.face_encodings(img))
                 face_encoding = face_recognition.face_encodings(img)[0]
                 self.known_face_encodings.append(face_encoding)
 
@@ -297,6 +299,7 @@ class FaceRecognitionApiView(APIView):
                         img = img.rotate(90, expand=True)
             img = img.convert("RGB")
             img.save(image_path, format='JPEG', quality=90)
+        print(image_path)
         username = face_recog.recognize_faces_in_image(image_path)
 
         for item in os.listdir(folder_path):
