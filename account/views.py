@@ -40,8 +40,8 @@ class KaKaoCallBackView(APIView):
         data = {
             "grant_type": "authorization_code",
             "client_id": "1def2aa86fd42c81904840220886ac54",
-            "redirect_uri" : "http://192.168.0.15:3000/kakao/callback/",
-            # "redirect_uri" : "http://127.0.0.1:3000/kakao/callback/",
+            # "redirect_uri" : "http://192.168.0.15:3000/kakao/callback/",
+            "redirect_uri" : "http://127.0.0.1:3000/kakao/callback/",
             "code" : request.GET["code"]
         }
 
