@@ -327,7 +327,7 @@ class FaceRegisterAPIView(APIView):
     def post(self,request):
         image = request.data.get("image")
         folder_path = "./media/unknown/"
-        image_path = os.path.join(folder_path, 'image.jpeg')
+        image_path = os.path.join(folder_path, 'image_register.jpeg')
 
         with Image.open(image) as img:
             # Check and adjust orientation if needed
@@ -344,7 +344,11 @@ class FaceRegisterAPIView(APIView):
             img = img.convert("RGB")
             img.save(image_path, format='JPEG', quality=90)
 
-        if face_recognition.face_locations(image):
+        image_check =  face_recognition.face_locations(face_recognition.load_image_file(image_path))
+        for item in os.listdir(folder_path):
+            item_path = os.path.join(folder_path, item)
+            os.remove(item_path)
+        if image_check:
             unique_filename = request.user.username + os.path.splitext(image.name)[-1]
             request.user.image.save(unique_filename, image)
             request.user.face_registered = True
