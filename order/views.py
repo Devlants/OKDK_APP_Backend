@@ -51,7 +51,7 @@ class MonthOrderApiView(APIView):
 
             else:
                 data[month] = {
-                    "total" : 0,
+                    "total" : order["totalPrice"],
                     "orders" : []
                 }
             data[month]["orders"].append(order)
