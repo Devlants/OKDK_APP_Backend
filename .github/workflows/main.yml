@@ -13,8 +13,8 @@ jobs:
       - name: Run commands on EC2
         env:
           PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          HOSTNAME: ${{secrets.SSH_HOST}}
-          USER_NAME: ${{secrets.USER_NAME}}
+          HOSTNAME: ${{secrets.HOST}}
+          USER_NAME: ${{secrets.USER}}
         run: |
             echo hi
 
