@@ -18,7 +18,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            cd /home/${USER_NAME}/OKDK_APP_Backend
+            cd /home/ubuntu/OKDK_APP_Backend
             git pull
             sudo systemctl restart gunicorn
 
