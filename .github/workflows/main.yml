@@ -12,13 +12,13 @@ jobs:
     steps:
       - name: Run commands on EC2
         uses: appleboy/ssh-action@master
-          with:
-            host: ${{secrets.HOST}}
-            username: ${{secrets.USER}}
-            key: ${{ secrets.SSH_PRIVATE_KEY }}
-            port: 22
-        script: |
-          cd /home/${USER_NAME}/OKDK_APP_Backend &&
-          git pull &&
-          sudo systemctl restart gunicorn
+        with:
+          host: ${{secrets.HOST}}
+          username: ${{secrets.USER}}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            cd /home/${USER_NAME}/OKDK_APP_Backend
+            git pull
+            sudo systemctl restart gunicorn
 
