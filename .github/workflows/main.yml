@@ -15,4 +15,4 @@ jobs:
 
       - name: Run commands on EC2
         run: |
-          ssh -i ~/.ssh/id_rsa ubuntu@ip-172-31-2-138 "echo hi"
+          ssh -i home/ubuntu/.ssh/id_rsa ubuntu@ip-172-31-2-138 "echo hi"
