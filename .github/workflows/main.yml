@@ -11,8 +11,8 @@ jobs:
 
     steps:
       - name: Get Github Actions IP
-          id: ip
-          uses: haythem/public-ip@v1.2
+        id: ip
+        uses: haythem/public-ip@v1.2
 
 #      - name: Configure AWS Credentials
 #          uses: aws-actions/configure-aws-credentials@v1
