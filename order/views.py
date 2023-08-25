@@ -86,6 +86,7 @@ class FavoriteAPIView(APIView):
                     context["temperature"] = next((item for item in temperatures if item["id"] == favorite.temperature), None)
                     context["size"] = next((item for item in sizes if item["id"] == favorite.size), None)
                     favorites[brand.name].append(context)
+                print(request.user.favorite_set.all())
 
         return Response(favorites)
 
