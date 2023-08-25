@@ -16,7 +16,7 @@ jobs:
           HOSTNAME: ${{secrets.HOST}}
           USER_NAME: ${{secrets.USER}}
         run: |
-          cd /home/ubuntu/OKDK_APP_Backend
+          cd /home/"$USER_NAME"/OKDK_APP_Backend
           git pull
           sudo systemctl restart gunicorn
 
