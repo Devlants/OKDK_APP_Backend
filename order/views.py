@@ -68,14 +68,17 @@ class FavoriteAPIView(APIView):
             api = brand.api
             if Favorite.objects.filter(brand = brand).exists():
                 favorites[brand.name] = []
-
+                print(request.user.favorite_set.all())
                 #데이터 받아오기
                 menues = []
                 datas = requests.get(api+"menu/list/").json()
+                print(request.user.favorite_set.all())
                 for data in datas:
                     menues+=data["menues"]
                 temperatures = requests.get(api+"order/temperature/list/").json()
+                print(request.user.favorite_set.all())
                 sizes = requests.get(api+"order/size/list/").json()
+                print(request.user.favorite_set.all())
 
                 for favorite in Favorite.objects.filter(brand = brand):
                     context = {}

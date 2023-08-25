@@ -23,17 +23,6 @@ from PIL import Image
 import re
 
 @permission_classes((AllowAny,))
-class KaKaoView(APIView):
-    def get(self, request):
-        kakao_api = "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id="
-
-        redirect_uri = "http://127.0.0.1:8000/account/kakao/callback/"
-        client_id = "1def2aa86fd42c81904840220886ac54"
-        response = requests.get(f"{kakao_api}{client_id}&redirect_uri={redirect_uri}")
-        print(response.url)
-        return Response(response.text)
-
-@permission_classes((AllowAny,))
 class KaKaoCallBackView(APIView):
     def get(self, request):
         print("hi")
@@ -69,21 +58,6 @@ class KaKaoCallBackView(APIView):
                 'access': str(refresh.access_token),
                 'refresh': str(refresh)
             })
-
-@permission_classes((AllowAny,))
-class NaverView(APIView):
-    def get(self, request, *args, **kwargs):
-        client_id = "oRQ7F4q_jX8AvonjIVNf"
-        response_type = "code"
-        uri = "http://3.38.180.187/account/naver/callback/"
-        state = "NAVER_LOGIN_STRING"
-        # Naver Document 에서 확인했던 요청 url
-        url = "https://nid.naver.com/oauth2.0/authorize"
-
-        # Document에 나와있는 요소들을 담아서 요청한다.
-        return redirect(
-            f'{url}?response_type={response_type}&client_id={client_id}&redirect_uri={uri}&state={state}'
-        )
 
 @permission_classes((AllowAny,))
 class NaverCallBackView(APIView):
