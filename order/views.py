@@ -91,6 +91,7 @@ class FavoriteAPIView(APIView):
         return Response(favorites)
 
     def post(self,request):
+        print(request.data)
         brand = Brand.objects.get(name = request.data["brand"])
         favorites = request.user.favorite_set.filter(brand = brand)
         for favorite in favorites:
