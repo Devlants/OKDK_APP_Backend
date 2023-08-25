@@ -304,7 +304,7 @@ class FaceRecognitionApiView(APIView):
         face_recog = FaceRecog()
         print("init FaceRecog()")
         with Image.open(image) as img:
-            # Check and adjust orientation if needed
+            print("img opened")
             if hasattr(img, "_getexif"):
                 exif = img._getexif()
                 if exif is not None:
@@ -316,8 +316,9 @@ class FaceRecognitionApiView(APIView):
                     elif orientation == 8:
                         img = img.rotate(90, expand=True)
             img = img.convert("RGB")
+            print("img converted")
             img.save(image_path, format='JPEG', quality=90)
-        print(image_path,"save image")
+            print(image_path,"img saved")
         username = face_recog.recognize_faces_in_image(image_path)
         print("username",username)
         for item in os.listdir(folder_path):
