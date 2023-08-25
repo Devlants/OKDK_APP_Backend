@@ -303,6 +303,7 @@ class FaceRecognitionApiView(APIView):
 
         face_recog = FaceRecog()
         print("init FaceRecog()")
+        print("image :",image)
         with Image.open(image) as img:
             print("img opened")
             if hasattr(img, "_getexif"):
