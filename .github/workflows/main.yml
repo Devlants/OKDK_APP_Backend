@@ -6,12 +6,11 @@ on:
       - develop
 
 jobs:
-  deploy:
+  Deploy:
     runs-on: ubuntu-latest
 
     steps:
       - name: Run commands on EC2
-        uses: appleboy/ssh-action@master
         env:
           PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           HOSTNAME: ${{secrets.SSH_HOST}}
