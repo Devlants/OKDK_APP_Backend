@@ -10,7 +10,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
       - name: Run commands on EC2
         uses: appleboy/ssh-action@master
         with:
@@ -18,5 +17,5 @@ jobs:
           host: ${{ secrets.HOST }} # 내가 변수로 저장한 ip
           username: ${{ secrets.USER }} # 내가 변수로 저장한 User
           script: |
-            ehco hi
+            echo hi
 
