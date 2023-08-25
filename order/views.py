@@ -80,14 +80,14 @@ class FavoriteAPIView(APIView):
                 sizes = requests.get(api+"order/size/list/").json()
                 print(request.user.favorite_set.all())
 
-                for favorite in Favorite.objects.filter(brand = brand):
+                for favorite in Favorite.objects.filter(user = request.user,brand = brand):
                     context = {}
                     context["menu"] = next((item for item in menues if item["id"] == favorite.menu), None)
                     context["temperature"] = next((item for item in temperatures if item["id"] == favorite.temperature), None)
                     context["size"] = next((item for item in sizes if item["id"] == favorite.size), None)
                     favorites[brand.name].append(context)
                 print(request.user.favorite_set.all())
-
+        print(favorites)
         return Response(favorites)
 
     def post(self,request):
