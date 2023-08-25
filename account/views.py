@@ -297,6 +297,8 @@ class FaceRecognitionApiView(APIView):
         if not os.listdir("./media/user/"):
             return Response(status=400,data = {"error":"얼굴 등록 정보가 없습니다."})
 
+        if "image" not in request.data or not request.data["image"]:
+            return Response(status=400,data = {"error":"사진 데이터 없음"})
         image = request.data.get("image")
         folder_path = "./media/unknown/"
         image_path = os.path.join(folder_path, 'image.jpeg')
