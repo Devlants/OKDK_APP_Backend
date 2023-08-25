@@ -99,5 +99,10 @@ class FavoriteAPIView(APIView):
 
         return Response(status=200)
 
+    def delete(self,request):
+        favorite = Favorite.objects.filter(user = request.user, brand__id = request.data["id"])
+        favorite.delete()
+        return Response(status = 200, data = {"message":"삭제 성공"})
+
 
 
