@@ -13,11 +13,14 @@ from coffee.serializers import BrandSerializer
 
 @permission_classes((IsAuthenticated,))
 @authentication_classes([JWTAuthentication])
-class BrandNotFavoriteAPIView(APIView):
+class BrandList(APIView):
     def get(self,request):
-        user_favorites = set(list(request.user.favorite_set.all().values_list("brand__id",flat = True)))
-        brands = Brand.objects.exclude(id__in = user_favorites)
-        brands = BrandSerializer(brands,many=True).data
+        user_favorites = list(set(list(request.user.favorite_set.all().values_list("brand__id",flat = True))))
+        context = {
+            "user_favorites" : user_favorites
+        }
+        brands = Brand.objects.all()
+        brands = BrandSerializer(brands,many=True,context = context).data
 
         return Response(brands)
 
