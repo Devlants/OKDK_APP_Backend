@@ -357,7 +357,7 @@ class FaceRegisterAPIView(APIView):
 
     def put(self,request):
         if not request.user.face_registered:
-            return Response(status = 400,data = {"message": "이미 등록된 얼굴이 없음"})
+            return Response(status = 400,data = {"message": "등록된 얼굴이 없음"})
 
         image = request.data.get("image")
         folder_path = "./media/unknown/"
