@@ -29,19 +29,7 @@ ALLOWED_HOSTS = []
 
 PROJECT_HOST = "http://3.36.95.105"
 # Application definition
-CORS_ALLOWED_ORIGINS = [
-    "http://127.0.0.1:3000"# 클라이언트의 주소
-]
-CORS_ALLOW_CREDENTIALS = True
 
-CORS_ALLOW_METHODS = [
-    'DELETE',
-    'GET',
-    'OPTIONS',
-    'PATCH',
-    'POST',
-    'PUT',
-]
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -84,6 +72,20 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://127.0.0.1:3000"# 클라이언트의 주소
+]
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
 ]
 
 ROOT_URLCONF = 'config.urls'
