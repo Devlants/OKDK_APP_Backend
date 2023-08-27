@@ -66,7 +66,7 @@ class FavoriteAPIView(APIView):
         brands = Brand.objects.all()
         for brand in brands:
             api = brand.api
-            if Favorite.objects.filter(brand = brand).exists():
+            if Favorite.objects.filter(brand = brand,user = request.user).exists():
                 favorites[brand.name] = []
                 print(request.user.favorite_set.all())
                 #데이터 받아오기
