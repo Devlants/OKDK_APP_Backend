@@ -75,7 +75,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",'192.168.0.15:3000'# 클라이언트의 주소
+    "http://localhost:3000",'http://192.168.0.15:3000'# 클라이언트의 주소
 ]
 CORS_ALLOW_CREDENTIALS = True
 
