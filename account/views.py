@@ -35,6 +35,7 @@ class KaKaoCallBackView(APIView):
         }
 
         kakao_token_api = "https://kauth.kakao.com/oauth/token"
+        print(requests.post(kakao_token_api,data = data).json())
         ACCESS_TOKEN = requests.post(kakao_token_api,data = data).json()["access_token"]
 
         kakao_user_api = "https://kapi.kakao.com/v2/user/me"
