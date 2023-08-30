@@ -72,7 +72,7 @@ class FavoriteAPIView(APIView):
                 #데이터 받아오기
                 menues = []
                 datas = requests.get(api+"menu/list/").json()
-                print(request.user.favorite_set.all())
+                print("menue list",datas)
                 for data in datas:
                     menues+=data["menues"]
                 temperatures = requests.get(api+"order/temperature/list/").json()
