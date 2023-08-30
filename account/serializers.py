@@ -9,4 +9,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ["username","nickname","face_registered","mode",'image']
 
     def get_image(self,obj):
-        return settings.PROJECT_HOST + obj.image.url
+        if obj.image:
+            return settings.PROJECT_HOST + obj.image.url
+        else:
+            return None
