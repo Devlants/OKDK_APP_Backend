@@ -25,7 +25,6 @@ import re
 @permission_classes((AllowAny,))
 class KaKaoCallBackView(APIView):
     def get(self, request):
-        print("hi")
         data = {
             "grant_type": "authorization_code",
             "client_id": "1def2aa86fd42c81904840220886ac54",
