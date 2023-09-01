@@ -234,14 +234,12 @@ class FaceRecog():
         dirname = 'media/user'
         files = os.listdir(dirname)
         for filename in files:
-            print(filename)
             name, ext = os.path.splitext(filename)
             if ext == '.jpg':
                 self.known_face_names.append(name)
                 pathname = os.path.join(dirname, filename)
                 img = face_recognition.load_image_file(pathname)
-                print(img)
-                print(face_recognition.face_encodings(img))
+
                 face_encoding = face_recognition.face_encodings(img)[0]
                 self.known_face_encodings.append(face_encoding)
 
@@ -389,8 +387,9 @@ class FaceRegisterAPIView(APIView):
 
         if image_check:
             for item in os.listdir("./media/user/"):
-                item_path = os.path.join('./media/user/', item)
-                os.remove(item_path)
+                if item == request.user.username+".jpg":
+                    item_path = os.path.join('./media/user/', item)
+                    os.remove(item_path)
             unique_filename = request.user.username + os.path.splitext(image.name)[-1]
             request.user.image.save(unique_filename, image)
             request.user.face_registered = True
