@@ -350,6 +350,7 @@ class FaceRegisterAPIView(APIView):
 
         if image_check:
             unique_filename = request.user.username + os.path.splitext(image.name)[-1]
+            print(unique_filename)
             request.user.image.save(unique_filename, image)
             request.user.face_registered = True
             request.user.save()
