@@ -75,7 +75,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "http://127.0.0.1:3000","http://localhost:3000",'http://192.168.0.15:3000', "https://voluble-basbousa-74cfc0.netlify.app"# 클라이언트의 주소
+    "http://127.0.0.1:3000","http://localhost:3000",'http://192.168.0.15:3000', "http://43.201.113.143"# 클라이언트의 주소
 ]
 CORS_ALLOW_CREDENTIALS = True
 
