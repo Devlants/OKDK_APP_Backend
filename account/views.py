@@ -1,3 +1,5 @@
+import time
+
 from django.shortcuts import redirect
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -227,6 +229,7 @@ class MembershipApiView(APIView):
 
 class FaceRecog():
     def __init__(self):
+        start = time.time()
         self.known_face_encodings = []
         self.known_face_names = []
 
@@ -234,19 +237,22 @@ class FaceRecog():
         dirname = 'media/user'
         files = os.listdir(dirname)
         for filename in files:
+            start = time.time()
             name, ext = os.path.splitext(filename)
             if ext == '.jpg':
                 self.known_face_names.append(name)
                 pathname = os.path.join(dirname, filename)
                 img = face_recognition.load_image_file(pathname)
+                print(f"load_image_file end : {time.time() - start:.5f} sec")
+                start = time.time()
 
                 face_encoding = face_recognition.face_encodings(img)[0]
                 self.known_face_encodings.append(face_encoding)
+                print(f"known_face_encodings end : {time.time() - start:.5f} sec")
 
     def recognize_faces_in_image(self, image_path):
         # Load the image
         image = face_recognition.load_image_file(image_path)
-        print("image",image)
         # Find all the faces and face encodings in the image
         face_locations = face_recognition.face_locations(image)
         print("face_locations",face_locations)
@@ -269,7 +275,7 @@ class FaceRecog():
 @permission_classes((AllowAny,))
 class FaceRecognitionApiView(APIView):
     def post(self,request):
-
+        start = time.time()
         if not os.listdir("./media/user/"):
             return Response(status=400,data = {"error":"얼굴 등록 정보가 없습니다."})
 
@@ -278,7 +284,7 @@ class FaceRecognitionApiView(APIView):
         image = request.data.get("image")
         folder_path = "./media/unknown/"
         image_path = os.path.join(folder_path, 'image.jpeg')
-
+        print(f"{time.time() - start:.5f} sec")
         face_recog = FaceRecog()
         print("init FaceRecog()")
         print("image :",image)
