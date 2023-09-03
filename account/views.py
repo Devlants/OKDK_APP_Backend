@@ -401,6 +401,7 @@ class FaceRegisterAPIView(APIView):
 
         if image_check:
             for item in os.listdir("./media/user/"):
+                print(item)
                 if item == request.user.username+".jpg":
                     item_path = os.path.join('./media/user/', item)
                     os.remove(item_path)
