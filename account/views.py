@@ -181,6 +181,13 @@ class UserInfoAPIView(APIView):
 
     def delete(self,request):
         user = request.user
+        username = user.username
+        dirname = 'media/user'
+        filename = username+".jpg"
+        files = os.listdir(dirname)
+        for file in files:
+            if file == filename:
+                os.remove(os.path.join(dirname,filename))
         user.delete()
         return Response(status = 200)
 
