@@ -130,7 +130,7 @@ class MembershipAPIView(APIView):
 
     def delete(self,request):
         try:
-            membership = request.user.membership_set.get(brand__name = request.data.get("brand"))
+            membership = request.user.membership_set.get(brand__id = request.data.get("brand_id"))
             membership.delete()
             return Response(status = 200, data = {"message":"해당 매장의 멤버쉽이 삭제되었습니다."})
         except:
