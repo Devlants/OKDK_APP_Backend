@@ -128,6 +128,18 @@ class MembershipAPIView(APIView):
         data = MembershipDetailSerializer(membership).data
         return Response(data)
 
+    def delete(self,request):
+        try:
+            membership = request.user.membership_set.get(brand__name = request.data.get("brand"))
+            membership.delete()
+            return Response(status = 200, data = {"message":"해당 매장의 멤버쉽이 삭제되었습니다."})
+        except:
+            return Response(status = 400, data = {"message":"해당 매장의 멤버쉽 정보가 없습니다."})
+
+
+
+
+
 @permission_classes((IsAuthenticated,))
 @authentication_classes([JWTAuthentication])
 class MembershipCreateAPIView(APIView):

@@ -400,14 +400,10 @@ class FaceRegisterAPIView(APIView):
             os.remove(item_path)
 
         if image_check:
-            print(os.listdir("./media/user/"))
             for item in os.listdir("./media/user/"):
-                print(item,request.user.username+".jpg")
                 if item == request.user.username+".jpg":
                     item_path = os.path.join('./media/user/', item)
-                    print("item removed")
                     os.remove(item_path)
-                    print(os.listdir("./media/user/"))
             unique_filename = request.user.username + os.path.splitext(image.name)[-1]
             request.user.image.save(unique_filename, image)
             request.user.face_registered = True
