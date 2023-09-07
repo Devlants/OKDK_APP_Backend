@@ -15,9 +15,11 @@ class RecentOrderApiView(APIView):
         data = {
             "user" : request.user.username
         }
+        print(data)
         for brand in Brand.objects.all():
             api = brand.api
             response = requests.post(api+"order/list/",data = data)
+            print(response.json())
             try:
                 response = response.json()
             except:
