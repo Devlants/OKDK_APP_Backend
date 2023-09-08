@@ -241,21 +241,15 @@ class FaceRecog():
         self.known_face_names = []
 
         # Load sample pictures and learn how to recognize them.
-        dirname = 'media/user'
-        files = os.listdir(dirname)
-        for filename in files:
+        users = User.objects.filter(face_registered = True)
+        for user in users:
             start = time.time()
-            name, ext = os.path.splitext(filename)
-            if ext == '.jpg':
-                self.known_face_names.append(name)
-                pathname = os.path.join(dirname, filename)
-                img = face_recognition.load_image_file(pathname)
-                print(f"load_image_file end : {time.time() - start:.5f} sec")
-                start = time.time()
+            self.known_face_names.append(user.username)
+            print(f"load_image_file end : {time.time() - start:.5f} sec")
+            start = time.time()
 
-                face_encoding = face_recognition.face_encodings(img)[0]
-                self.known_face_encodings.append(face_encoding)
-                print(f"known_face_encodings end : {time.time() - start:.5f} sec")
+            self.known_face_encodings.append(np.array(list(map(float,user.image.split()))).reshape((128,)))
+            print(f"known_face_encodings end : {time.time() - start:.5f} sec")
 
     def recognize_faces_in_image(self, image_path):
         # Load the image
@@ -283,7 +277,7 @@ class FaceRecog():
 class FaceRecognitionApiView(APIView):
     def post(self,request):
         start = time.time()
-        if not os.listdir("./media/user/"):
+        if not User.objects.filter(face_registered = True).exists():
             return Response(status=400,data = {"error":"얼굴 등록 정보가 없습니다."})
 
         if "image" not in request.data or not request.data["image"]:
@@ -333,11 +327,7 @@ class FaceRecognitionApiView(APIView):
 @permission_classes((IsAuthenticated,))
 @authentication_classes([JWTAuthentication])
 class FaceRegisterAPIView(APIView):
-    def post(self,request):
-        if request.user.face_registered:
-            return Response(status = 400,data = {"message": "이미 등록된 얼굴이 있음"})
-
-        image = request.data.get("image")
+    def image_preprocess(self,image):
         folder_path = "./media/unknown/"
         image_path = os.path.join(folder_path, 'image_register.jpeg')
 
@@ -357,14 +347,26 @@ class FaceRegisterAPIView(APIView):
             img.save(image_path, format='JPEG', quality=90)
 
         image_check =  face_recognition.face_locations(face_recognition.load_image_file(image_path))
-        for item in os.listdir(folder_path):
-            item_path = os.path.join(folder_path, item)
-            os.remove(item_path)
-
         if image_check:
-            unique_filename = request.user.username + os.path.splitext(image.name)[-1]
-            print(unique_filename)
-            request.user.image.save(unique_filename, image)
+            image = face_recognition.load_image_file(image_path)
+            image = str(face_recognition.face_encodings(image)[0])[1:-1]
+            for item in os.listdir(folder_path):
+                item_path = os.path.join(folder_path, item)
+                os.remove(item_path)
+            return image
+
+        else:
+            return None
+
+    def post(self,request):
+        if request.user.face_registered:
+            return Response(status = 400,data = {"message": "이미 등록된 얼굴이 있음"})
+
+        image = request.data.get("image")
+        image = self.image_preprocess(image)
+
+        if image:
+            request.user.image = image
             request.user.face_registered = True
             request.user.save()
             return Response(status = 200)
@@ -376,37 +378,10 @@ class FaceRegisterAPIView(APIView):
             return Response(status = 400,data = {"message": "등록된 얼굴이 없음"})
 
         image = request.data.get("image")
-        folder_path = "./media/unknown/"
-        image_path = os.path.join(folder_path, 'image_register.jpeg')
+        image = self.image_preprocess(image)
 
-        with Image.open(image) as img:
-            # Check and adjust orientation if needed
-            if hasattr(img, "_getexif"):
-                exif = img._getexif()
-                if exif is not None:
-                    orientation = exif.get(0x0112, 1)
-                    if orientation == 3:
-                        img = img.rotate(180, expand=True)
-                    elif orientation == 6:
-                        img = img.rotate(270, expand=True)
-                    elif orientation == 8:
-                        img = img.rotate(90, expand=True)
-            img = img.convert("RGB")
-            img.save(image_path, format='JPEG', quality=90)
-
-        image_check =  face_recognition.face_locations(face_recognition.load_image_file(image_path))
-        for item in os.listdir(folder_path):
-            item_path = os.path.join(folder_path, item)
-            os.remove(item_path)
-
-        if image_check:
-            for item in os.listdir("./media/user/"):
-                if item == request.user.username+".jpg":
-                    item_path = os.path.join('./media/user/', item)
-                    os.remove(item_path)
-            unique_filename = request.user.username + os.path.splitext(image.name)[-1]
-            request.user.image.save(unique_filename, image)
-            request.user.face_registered = True
+        if image:
+            request.user.image = image
             request.user.save()
             return Response(status = 200)
         else:

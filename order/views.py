@@ -15,17 +15,21 @@ class RecentOrderApiView(APIView):
         data = {
             "user" : request.user.username
         }
-        print(data)
+
         for brand in Brand.objects.all():
             api = brand.api
             response = requests.post(api+"order/list/",data = data)
-            print(response.json())
+            print("response",response.json())
+            print()
             try:
                 response = response.json()
             except:
                 response = []
             recents+=response
+            print("recents",recents)
+            print()
         recents.sort(key = lambda x : x["created_at"],reverse = True)
+        print(recents[2])
         return Response(recents)
 
 @permission_classes((IsAuthenticated,))
