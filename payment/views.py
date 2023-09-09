@@ -129,6 +129,7 @@ class MembershipAPIView(APIView):
         return Response(data)
 
     def delete(self,request):
+        print(request.data)
         try:
             membership = request.user.membership_set.get(id = request.data.get("id"))
             membership.delete()
