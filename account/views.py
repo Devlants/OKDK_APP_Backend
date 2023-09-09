@@ -144,7 +144,8 @@ class GoogleCallBackView(APIView):
 
         return Response({
                 'access': str(refresh.access_token),
-                'refresh': str(refresh)
+                'refresh': str(refresh),
+                "googleAccessToken" : access_token,
             })
 
 @permission_classes((AllowAny,))
