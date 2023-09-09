@@ -128,10 +128,10 @@ class MembershipAPIView(APIView):
         data = MembershipDetailSerializer(membership).data
         return Response(data)
 
-    def delete(self,request):
-        print(request.data)
+    def delete(self,request,**kwargs):
+        print(request.GET)
         try:
-            membership = request.user.membership_set.get(id = request.data.get("id"))
+            membership = request.user.membership_set.get(id = int(request.GET.get("id")))
             membership.delete()
             return Response(status = 200, data = {"message":"해당 매장의 멤버쉽이 삭제되었습니다."})
         except:
