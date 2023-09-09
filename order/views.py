@@ -74,17 +74,13 @@ class FavoriteAPIView(APIView):
             api = brand.api
             if Favorite.objects.filter(brand = brand,user = request.user).exists():
                 favorites[brand.name] = []
-                print(request.user.favorite_set.all())
                 #데이터 받아오기
                 menues = []
                 datas = requests.get(api+"menu/list/").json()
-                print("menue list",datas)
                 for data in datas:
                     menues+=data["menues"]
                 temperatures = requests.get(api+"order/temperature/list/").json()
-                print(request.user.favorite_set.all())
                 sizes = requests.get(api+"order/size/list/").json()
-                print(request.user.favorite_set.all())
 
                 for favorite in Favorite.objects.filter(user = request.user,brand = brand):
                     context = {}
@@ -92,8 +88,6 @@ class FavoriteAPIView(APIView):
                     context["temperature"] = next((item for item in temperatures if item["id"] == favorite.temperature), None)
                     context["size"] = next((item for item in sizes if item["id"] == favorite.size), None)
                     favorites[brand.name].append(context)
-                print(request.user.favorite_set.all())
-        print(favorites)
         return Response(favorites)
 
     def post(self,request):
