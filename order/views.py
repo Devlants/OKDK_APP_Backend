@@ -29,7 +29,7 @@ class RecentOrderApiView(APIView):
             print("recents",recents)
             print()
         recents.sort(key = lambda x : x["created_at"],reverse = True)
-        print(recents[2])
+
         return Response(recents)
 
 @permission_classes((IsAuthenticated,))
