@@ -257,6 +257,8 @@ class FaceRecog():
         # Find all the faces and face encodings in the image
         face_locations = face_recognition.face_locations(image)
         print("face_locations",face_locations)
+        if not face_locations:
+            return None
         face_encodings = face_recognition.face_encodings(image, face_locations)
         face_names = []
         for face_encoding in face_encodings:
@@ -306,6 +308,8 @@ class FaceRecognitionApiView(APIView):
             img.save(image_path, format='JPEG', quality=90)
             print(image_path,"img saved")
         username = face_recog.recognize_faces_in_image(image_path)
+        if not username:
+            return Response(status=400,data = {"error" : "얼굴 위치 인식 실패"})
         print("username",username)
         for item in os.listdir(folder_path):
             item_path = os.path.join(folder_path, item)
