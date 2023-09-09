@@ -100,6 +100,35 @@ class NaverCallBackView(APIView):
                 'refresh': str(refresh)
             })
 
+    def delete(self,request):
+        naver_token_api = "https://nid.naver.com/oauth2.0/token"
+        accessToken = request.GET["accessToken"]
+        data = {
+            "grant_type" : "delete",
+            "client_id" : "oRQ7F4q_jX8AvonjIVNf",
+            "client_secret" : "jA2auTdVIo",
+            "access_token" : accessToken,
+            "service_provider" : "NAVER"
+        }
+        try:
+            req = requests.post(naver_token_api,data = data)
+            print(req,"네이버 연동 해제 성공")
+
+        except:
+            return Response(status=400,data={"error":"유효하지 않은 accessToken"})
+
+        user = request.user
+        username = user.username
+        dirname = 'media/user'
+        filename = username+".jpg"
+        files = os.listdir(dirname)
+        for file in files:
+            if file == filename:
+                os.remove(os.path.join(dirname,filename))
+        user.delete()
+        return Response(status = 200,data={"msg":"회원탈퇴 성공"})
+
+
 @permission_classes((AllowAny,))
 class GoogleView(APIView):
     def get(self, request):
