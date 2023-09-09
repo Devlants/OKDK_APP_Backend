@@ -363,10 +363,11 @@ class FaceRegisterAPIView(APIView):
             return Response(status = 400,data = {"message": "이미 등록된 얼굴이 있음"})
 
         image = request.data.get("image")
-        image = self.image_preprocess(image)
+        image_data = self.image_preprocess(image)
 
-        if image:
+        if image_data:
             request.user.image = image
+            request.user.image_data = image_data
             request.user.face_registered = True
             request.user.save()
             return Response(status = 200)
@@ -378,10 +379,11 @@ class FaceRegisterAPIView(APIView):
             return Response(status = 400,data = {"message": "등록된 얼굴이 없음"})
 
         image = request.data.get("image")
-        image = self.image_preprocess(image)
+        image_data = self.image_preprocess(image)
 
-        if image:
+        if image_data:
             request.user.image = image
+            request.user.image_data = image_data
             request.user.save()
             return Response(status = 200)
         else:
