@@ -248,7 +248,7 @@ class FaceRecog():
             print(f"load_image_file end : {time.time() - start:.5f} sec")
             start = time.time()
 
-            self.known_face_encodings.append(np.array(list(map(float,user.image.split()))).reshape((128,)))
+            self.known_face_encodings.append(np.array(list(map(float,user.image_data.split()))).reshape((128,)))
             print(f"known_face_encodings end : {time.time() - start:.5f} sec")
 
     def recognize_faces_in_image(self, image_path):
@@ -366,7 +366,8 @@ class FaceRegisterAPIView(APIView):
         image_data = self.image_preprocess(image)
 
         if image_data:
-            request.user.image = image
+            unique_filename = request.user.username + os.path.splitext(image.name)[-1]
+            request.user.image.save(unique_filename, image)
             request.user.image_data = image_data
             request.user.face_registered = True
             request.user.save()
@@ -382,7 +383,8 @@ class FaceRegisterAPIView(APIView):
         image_data = self.image_preprocess(image)
 
         if image_data:
-            request.user.image = image
+            unique_filename = request.user.username + os.path.splitext(image.name)[-1]
+            request.user.image.save(unique_filename, image)
             request.user.image_data = image_data
             request.user.save()
             return Response(status = 200)
