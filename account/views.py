@@ -129,7 +129,7 @@ class NaverCallBackView(APIView):
         return Response(status = 200,data={"msg":"회원탈퇴 성공"})
 
 
-@permission_c공asses((AllowAny,))
+@permission_classes((AllowAny,))
 class GoogleView(APIView):
     def get(self, request):
         app_key = "435546094465-nkivfk3cju2jg1jp1katfsu5ttbfkgti.apps.googleusercontent.com"
