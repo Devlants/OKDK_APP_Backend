@@ -32,7 +32,7 @@ class Card(models.Model):
     expiry_date = models.CharField(max_length=100)
     cvc = models.CharField(max_length=100)
     password = models.CharField(max_length=100)
-    default = models.BooleanField(default = True)
+    default = models.BooleanField(default = False)
     regex_patterns = {
         r"^3560[0-9]*": "BC",
         r"^3562 96[0-9]*": "신한",

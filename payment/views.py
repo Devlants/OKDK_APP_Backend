@@ -54,6 +54,10 @@ class CardCreateAPIView(APIView):
             new.set_default()
             new.save()
             print(new.default)
+        elif request.user.card_set.all().count() == 1:
+            new.set_default()
+            new.save()
+
         return Response(status=200)
 
     def put(self,request):
