@@ -136,7 +136,7 @@ class GoogleView(APIView):
         scope = "https://www.googleapis.com/auth/userinfo.email " + \
                 "https://www.googleapis.com/auth/userinfo.profile"
 
-        redirect_uri = "https://www.okdk.shop/account/google/callback/"
+        redirect_uri = "https://www.okdk.shop/google/callback/"
         google_auth_api = "https://accounts.google.com/o/oauth2/v2/auth"
 
         response = redirect(
