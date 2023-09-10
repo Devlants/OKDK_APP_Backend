@@ -27,7 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-PROJECT_HOST = "http://3.36.95.105"
+PROJECT_HOST = "https://www.okdkbackend.shop"
 # Application definition
 
 INSTALLED_APPS = [
