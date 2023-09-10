@@ -50,9 +50,10 @@ class CardCreateAPIView(APIView):
         else:
             new.image = None
         new.save()
-        if data["is_default"]:
+        if data["is_default"] == "true":
             new.set_default()
             new.save()
+            print(new.default)
         return Response(status=200)
 
     def put(self,request):
@@ -61,7 +62,7 @@ class CardCreateAPIView(APIView):
         if serializer.is_valid():
             card = serializer.save()
             card.image = request.FILES.get("image")
-            if request.POST.get("is_default"):
+            if request.POST.get("is_default") == "true":
                 card.set_default()
             card.save()
 
