@@ -75,7 +75,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "http://127.0.0.1:3000","http://localhost:3000",'http://192.168.0.15:3000', "http://43.201.113.143","http://ec2-43-201-113-143.ap-northeast-2.compute.amazonaws.com"# 클라이언트의 주소
+    "http://127.0.0.1:3000","http://localhost:3000",'http://192.168.0.15:3000', "https://okdk.shop","http://ec2-43-201-113-143.ap-northeast-2.compute.amazonaws.com"# 클라이언트의 주소
 ]
 CORS_ALLOW_CREDENTIALS = True
 

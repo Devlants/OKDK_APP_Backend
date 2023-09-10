@@ -30,7 +30,7 @@ class KaKaoCallBackView(APIView):
         data = {
             "grant_type": "authorization_code",
             "client_id": "1def2aa86fd42c81904840220886ac54",
-            "redirect_uri" : "http://ec2-43-201-113-143.ap-northeast-2.compute.amazonaws.com/kakao/callback/",
+            "redirect_uri" : "https://okdk.shop/kakao/callback/",
             # "redirect_uri" : "http://127.0.0.1:3000/kakao/callback/",
             "code" : request.GET["code"]
         }
@@ -136,7 +136,7 @@ class GoogleView(APIView):
         scope = "https://www.googleapis.com/auth/userinfo.email " + \
                 "https://www.googleapis.com/auth/userinfo.profile"
 
-        redirect_uri = "http://ec2-3-38-180-187.ap-northeast-2.compute.amazonaws.com/account/google/callback/"
+        redirect_uri = "https://okdk.shop/account/google/callback/"
         google_auth_api = "https://accounts.google.com/o/oauth2/v2/auth"
 
         response = redirect(
