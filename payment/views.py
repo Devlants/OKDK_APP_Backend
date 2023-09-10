@@ -42,6 +42,8 @@ class CardAPIView(APIView):
 class CardCreateAPIView(APIView):
     def post(self,request):
         data = request.POST
+        print(data["is_default"])
+        print(type(data["is_default"]))
         new = Card(user = request.user, serial_num = data["serial_num"],expiry_date = data["expiry_date"],cvc = data["cvc"],password = data["password"])
         if request.FILES.get("image") != "":
             new.image = request.FILES.get("image")
