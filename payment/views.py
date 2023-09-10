@@ -61,7 +61,7 @@ class CardCreateAPIView(APIView):
         return Response(status=200)
 
     def put(self,request):
-        card = Card.objects.get(id = request.POST.get("id"))
+        card = Card.objects.get(id = int(request.POST.get("id")))
         serializer = CardCreateSerializer(card, data=request.POST)
         if serializer.is_valid():
             card = serializer.save()
