@@ -13,7 +13,7 @@ class RecentOrderApiView(APIView):
     def get(self,request):
         recents = []
         data = {
-            "user" : request.user.username
+            "user" : request.user.id
         }
 
         for brand in Brand.objects.all():
@@ -38,7 +38,7 @@ class MonthOrderApiView(APIView):
     def get(self,request):
         orders = []
         data = {
-            "user" : request.user.username
+            "user" : request.user.id
         }
         for brand in Brand.objects.all():
             api = brand.api
